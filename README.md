@@ -1,11 +1,13 @@
 # Proyecto Sanos y Salvos APP
 
 ## 1. ¿Qué es y por qué nace "Sanos y Salvos"?
+
 El extravío de animales de compañía es una problemática con un alto impacto emocional y comunitario. Actualmente, los métodos de búsqueda dependen de acciones fragmentadas, como carteles físicos o publicaciones aisladas en redes sociales. Esto genera "silos de datos" desestructurados y obliga a los usuarios a realizar búsquedas manuales constantes en flujos de información ineficientes. Además, la falta de validación geoespacial provoca que muchas coincidencias pasen desapercibidas.
 Ante esta necesidad nace "Sanos y Salvos", una plataforma diseñada para centralizar y automatizar la búsqueda de mascotas extraviadas. Su objetivo es cruzar variables espaciales y descriptivas automáticamente mediante procesamiento asíncrono, notificando posibles coincidencias en tiempo real a los dueños sin requerir su intervención constante.
 ---
 
 ## 2. Arquitectura de Microservicios
+
 El diseño del sistema abandona el paradigma monolítico para implementar una Arquitectura Orientada a Microservicios. Las decisiones clave de arquitectura incluyen:
  - API Gateway: Funciona como punto único de entrada, centralizando la seguridad (validación de tokens JWT) y ocultando la complejidad del backend al Frontend.
  - Arquitectura Orientada a Eventos: Se utiliza un Event Bus (RabbitMQ o Kafka) para lograr alta concurrencia y desacoplamiento. Por ejemplo, al encontrar un "match", se publica un evento de forma asíncrona.
@@ -14,6 +16,7 @@ El diseño del sistema abandona el paradigma monolítico para implementar una Ar
 ---
 
 ## 3. Modelo de Datos
+
 Para garantizar el bajo acoplamiento y el aislamiento de dominios, el proyecto emplea el patrón Database per Service. La información no se centraliza, sino que se distribuye en las siguientes bases de datos independientes:
  - Microservicio de Autenticación: Gestiona la identidad, roles y el cifrado de credenciales.
  - Microservicio de Gestión de Reportes: Estructura los datos de la mascota (especie, raza), contacto directo y ubicación estandarizada.
@@ -24,6 +27,7 @@ Para garantizar el bajo acoplamiento y el aislamiento de dominios, el proyecto e
 ---
 
 ## 4. Procesos de Desarrollo, Pruebas y Despliegue
+
 La plataforma se construye separando lógicamente las vistas del cliente (Frontend) y los servicios de procesamiento (Backend).
  - Integración y Despliegue (CI/CD): Cada microservicio será contenerizado utilizando Docker para asegurar su independencia y escalabilidad.
  - Pruebas Unitarias: Se validará la lógica pura del negocio (algoritmos del Motor de Coincidencias y Notificaciones) utilizando Mocks.
@@ -33,6 +37,7 @@ La plataforma se construye separando lógicamente las vistas del cliente (Fronte
 ---
 
 ## 5. Información del Equipo
+
 - Desarrolladores: Rodrigo Baeza y Sibel Torti
 - Asignatura: Desarrollo Fullstack III (DSY1106-003V) 
 - Institución: Duoc UC, Sede Valparaíso 
