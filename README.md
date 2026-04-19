@@ -1,3 +1,21 @@
+
+## Actualizar la rama `rama` con los cambios de `main`
+
+Ejecuta los siguientes comandos para traer los últimos cambios de `main` a tu rama `rama`:
+
+```bash
+git checkout rama
+git fetch origin
+git merge origin/main
+```
+
+## Cambio entre ramas
+
+```bash
+git checkout rama
+```
+
+
 # Proyecto Sanos y Salvos APP
 
 ## 1. ¿Qué es y por qué nace "Sanos y Salvos"?

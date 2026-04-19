@@ -4,7 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+<<<<<<< HEAD
     <!-- Spring Boot Parent: gestiona versiones de todas las dependencias -->
+=======
+>>>>>>> origin/main
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -22,46 +25,67 @@
     </properties>
 
     <dependencies>
+<<<<<<< HEAD
 
         <!-- Spring Boot Web (REST controllers) -->
+=======
+>>>>>>> origin/main
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
         <!-- Spring Data JPA — incluye Hibernate como proveedor de persistencia -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+<<<<<<< HEAD
 
         <!-- Driver JDBC de PostgreSQL -->
+=======
+>>>>>>> origin/main
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+<<<<<<< HEAD
 
         <!-- Validación de beans (@NotNull, @Email, etc.) -->
+=======
+>>>>>>> origin/main
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+<<<<<<< HEAD
 
         <!-- Lombok (reduce boilerplate: getters, setters, constructores) -->
+=======
+>>>>>>> origin/main
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+<<<<<<< HEAD
 
         <!-- Tests -->
+=======
+>>>>>>> origin/main
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     </dependencies>
 
     <build>
@@ -81,4 +105,9 @@
         </plugins>
     </build>
 
+<<<<<<< HEAD
 </project>
+=======
+</project>
+
+>>>>>>> origin/main
