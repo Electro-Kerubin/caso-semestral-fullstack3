@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import sanosysalvos.dto.request.LoginRequest;
 import sanosysalvos.dto.request.RegisterRequest;
@@ -16,6 +18,7 @@ import sanosysalvos.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * POST /api/auth/register
@@ -33,7 +36,10 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        // Valida credenciales — lanza excepción si son incorrectas
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
         return ResponseEntity.ok(authService.login(request));
     }
 }
-

@@ -1,8 +1,6 @@
 package sanosysalvos.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +19,6 @@ public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordService passwordService;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     // --- UserDetailsService (requerido por Spring Security) ---
 
@@ -55,10 +52,6 @@ public class AuthService implements UserDetailsService {
     // --- Login ---
 
     public LoginResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-
         User user = (User) loadUserByUsername(request.getEmail());
         String token = jwtService.generateToken(user);
 
@@ -77,4 +70,3 @@ public class AuthService implements UserDetailsService {
                 .build();
     }
 }
-
