@@ -5,20 +5,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import sanosysalvos.dto.request.LoginRequest;
 import sanosysalvos.dto.request.RegisterRequest;
 import sanosysalvos.dto.response.LoginResponse;
-import sanosysalvos.model.Role;
-import sanosysalvos.model.User;
+import sanosysalvos.model.Rol;
+import sanosysalvos.model.Status;
+import sanosysalvos.model.Usuario;
+import sanosysalvos.repository.RolRepository;
+import sanosysalvos.repository.StatusRepository;
 import sanosysalvos.repository.UserRepository;
 import sanosysalvos.service.AuthService;
 import sanosysalvos.service.JwtService;
 import sanosysalvos.service.PasswordService;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -28,40 +29,48 @@ import static org.mockito.Mockito.*;
 class AuthServiceTest {
 
     @Mock private UserRepository userRepository;
+    @Mock private RolRepository rolRepository;
+    @Mock private StatusRepository statusRepository;
     @Mock private PasswordService passwordService;
     @Mock private JwtService jwtService;
-    @Mock private AuthenticationManager authenticationManager;
 
     @InjectMocks private AuthService authService;
+
+    private final Rol rolUser    = Rol.builder().idRol(1).descripcion("USER").build();
+    private final Status activo  = Status.builder().idStatus(1).descripcion("ACTIVO").build();
 
     // ---- register ----
 
     @Test
     void register_shouldReturnTokenWhenEmailIsNew() {
         RegisterRequest req = new RegisterRequest();
-        req.setName("Juan");
+        req.setNombreCompleto("Juan");
         req.setEmail("juan@test.com");
-        req.setPassword("password123");
+        req.setContrasena("password123");
+        req.setIdRol(1);
 
         when(userRepository.existsByEmail(req.getEmail())).thenReturn(false);
-        when(passwordService.encode(req.getPassword())).thenReturn("hashed");
-        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(jwtService.generateToken(any(User.class))).thenReturn("jwt-token");
+        when(rolRepository.findById(1)).thenReturn(Optional.of(rolUser));
+        when(statusRepository.findByDescripcion("ACTIVO")).thenReturn(Optional.of(activo));
+        when(passwordService.encode(req.getContrasena())).thenReturn("hashed");
+        when(userRepository.save(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(jwtService.generateToken(any(Usuario.class))).thenReturn("jwt-token");
 
         LoginResponse response = authService.register(req);
 
         assertThat(response.getToken()).isEqualTo("jwt-token");
         assertThat(response.getEmail()).isEqualTo("juan@test.com");
-        assertThat(response.getRole()).isEqualTo("USER");
-        verify(userRepository).save(any(User.class));
+        assertThat(response.getRol()).isEqualTo("USER");
+        verify(userRepository).save(any(Usuario.class));
     }
 
     @Test
     void register_shouldThrowWhenEmailAlreadyExists() {
         RegisterRequest req = new RegisterRequest();
         req.setEmail("duplicado@test.com");
-        req.setPassword("password123");
-        req.setName("Test");
+        req.setContrasena("password123");
+        req.setNombreCompleto("Test");
+        req.setIdRol(1);
 
         when(userRepository.existsByEmail(req.getEmail())).thenReturn(true);
 
@@ -76,20 +85,19 @@ class AuthServiceTest {
     void login_shouldReturnTokenOnValidCredentials() {
         LoginRequest req = new LoginRequest();
         req.setEmail("juan@test.com");
-        req.setPassword("password123");
+        req.setContrasena("password123");
 
-        User user = User.builder()
+        Usuario usuario = Usuario.builder()
                 .email("juan@test.com")
-                .name("Juan")
-                .password("hashed")
-                .role(Role.USER)
-                .enabled(true)
+                .nombreCompleto("Juan")
+                .contrasena("hashed")
+                .rol(rolUser)
+                .status(activo)
+                .roles(Set.of(rolUser))
                 .build();
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(null);
-        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(user)).thenReturn("jwt-token");
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.of(usuario));
+        when(jwtService.generateToken(usuario)).thenReturn("jwt-token");
 
         LoginResponse response = authService.login(req);
 
@@ -98,16 +106,14 @@ class AuthServiceTest {
     }
 
     @Test
-    void login_shouldThrowOnInvalidCredentials() {
+    void login_shouldThrowWhenUserNotFound() {
         LoginRequest req = new LoginRequest();
-        req.setEmail("juan@test.com");
-        req.setPassword("wrong");
+        req.setEmail("noexiste@test.com");
+        req.setContrasena("pass");
 
-        when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException("Credenciales incorrectas"));
+        when(userRepository.findByEmail(req.getEmail())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.login(req))
-                .isInstanceOf(BadCredentialsException.class);
+                .isInstanceOf(org.springframework.security.core.userdetails.UsernameNotFoundException.class);
     }
 }
-

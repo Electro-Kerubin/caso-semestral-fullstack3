@@ -38,7 +38,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         // Valida credenciales — lanza excepción si son incorrectas
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getContrasena())
         );
         return ResponseEntity.ok(authService.login(request));
     }

@@ -8,15 +8,22 @@ import org.springframework.stereotype.Service;
 import sanosysalvos.dto.request.LoginRequest;
 import sanosysalvos.dto.request.RegisterRequest;
 import sanosysalvos.dto.response.LoginResponse;
-import sanosysalvos.model.Role;
-import sanosysalvos.model.User;
+import sanosysalvos.model.Rol;
+import sanosysalvos.model.Status;
+import sanosysalvos.model.Usuario;
+import sanosysalvos.repository.RolRepository;
+import sanosysalvos.repository.StatusRepository;
 import sanosysalvos.repository.UserRepository;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final RolRepository rolRepository;
+    private final StatusRepository statusRepository;
     private final PasswordService passwordService;
     private final JwtService jwtService;
 
@@ -35,38 +42,46 @@ public class AuthService implements UserDetailsService {
             throw new IllegalArgumentException("El email ya está registrado");
         }
 
-        User user = User.builder()
-                .name(request.getName())
+        Rol rolUser = rolRepository.findById(request.getIdRol())
+                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con id: " + request.getIdRol()));
+
+        Status statusActivo = statusRepository.findByDescripcion("ACTIVO")
+                .orElseThrow(() -> new IllegalStateException("Status ACTIVO no encontrado en BD"));
+
+        Usuario usuario = Usuario.builder()
+                .nombreCompleto(request.getNombreCompleto())
                 .email(request.getEmail())
-                .password(passwordService.encode(request.getPassword()))
-                .role(Role.USER)
-                .enabled(true)
+                .contrasena(passwordService.encode(request.getContrasena()))
+                .rol(rolUser)
+                .status(statusActivo)
+                .roles(Set.of(rolUser))
+                .emailVerificado(false)
                 .build();
 
-        userRepository.save(user);
-        String token = jwtService.generateToken(user);
+        userRepository.save(usuario);
+        String token = jwtService.generateToken(usuario);
 
-        return buildResponse(token, user);
+        return buildResponse(token, usuario);
     }
 
     // --- Login ---
 
     public LoginResponse login(LoginRequest request) {
-        User user = (User) loadUserByUsername(request.getEmail());
-        String token = jwtService.generateToken(user);
+        Usuario usuario = (Usuario) loadUserByUsername(request.getEmail());
+        String token = jwtService.generateToken(usuario);
 
-        return buildResponse(token, user);
+        return buildResponse(token, usuario);
     }
 
     // --- Helper ---
 
-    private LoginResponse buildResponse(String token, User user) {
+    private LoginResponse buildResponse(String token, Usuario usuario) {
         return LoginResponse.builder()
                 .token(token)
                 .type("Bearer")
-                .email(user.getEmail())
-                .name(user.getName())
-                .role(user.getRole().name())
+                .email(usuario.getEmail())
+                .nombreCompleto(usuario.getNombreCompleto())
+                .rol(usuario.getRol() != null ? usuario.getRol().getDescripcion() : "USER")
                 .build();
     }
 }
