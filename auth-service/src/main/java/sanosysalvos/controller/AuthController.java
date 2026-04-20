@@ -42,4 +42,14 @@ public class AuthController {
         );
         return ResponseEntity.ok(authService.login(request));
     }
+
+    /**
+     * PATCH /api/auth/verify/{email}
+     * Marca el email del usuario como verificado (email_verificado = true).
+     */
+    @PatchMapping("/verify/{email}")
+    public ResponseEntity<Void> verificarEmail(@PathVariable String email) {
+        authService.verificarEmail(email);
+        return ResponseEntity.noContent().build();
+    }
 }

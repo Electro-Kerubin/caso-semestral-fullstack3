@@ -78,6 +78,17 @@ public class AuthService implements UserDetailsService {
         return buildResponse(token, usuario);
     }
 
+    // --- Verificación de email ---
+
+    public void verificarEmail(String email) {
+        Usuario usuario = (Usuario) loadUserByUsername(email);
+        if (usuario.isEmailVerificado()) {
+            throw new IllegalArgumentException("El email ya está verificado");
+        }
+        usuario.setEmailVerificado(true);
+        userRepository.save(usuario);
+    }
+
     // --- Helper ---
 
     private LoginResponse buildResponse(String token, Usuario usuario) {
