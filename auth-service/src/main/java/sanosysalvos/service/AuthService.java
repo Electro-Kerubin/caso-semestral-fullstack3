@@ -68,6 +68,11 @@ public class AuthService implements UserDetailsService {
 
     public LoginResponse login(LoginRequest request) {
         Usuario usuario = (Usuario) loadUserByUsername(request.getEmail());
+
+        // Actualiza last_login_at en BD
+        usuario.setLastLoginAt(java.time.LocalDateTime.now());
+        userRepository.save(usuario);
+
         String token = jwtService.generateToken(usuario);
 
         return buildResponse(token, usuario);
