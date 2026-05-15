@@ -1,11 +1,16 @@
 export const COLORS = {
-  primary: '#fca503',
-  secondary: '#1473d9',
-  background: '#ffffff',
-  text: '#111827',
-  muted: '#6b7280'
+  primary: '#f59e0b',
+  secondary: '#0f766e',
+  accent: '#ef4444',
+  success: '#16a34a',
+  background: '#f6f3ed',
+  surface: '#ffffff',
+  text: '#142033',
+  muted: '#667085',
+  border: '#e5e7eb',
+  soft: '#f3f4f6'
 };
 export const FONT = {
-  regular: 'Nunito_400Regular',
-  bold: 'Nunito_700Bold'
+  regular: 'System',
+  bold: 'System'
 };
