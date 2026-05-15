@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenShell from '../components/ScreenShell';
@@ -9,6 +9,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import ConfirmModal from '../components/ConfirmModal';
 import { COLORS } from '../styles/theme';
 import { MOCK_REPORTS } from '../data/mockReports';
+import api from '../api/api';
 
 const PAGE_SIZE = 20;
 
@@ -71,9 +72,34 @@ export default function DashboardScreen({ navigation }) {
     return `${day}/${month}/${year}`;
   };
 
-  const reportsOrdered = useMemo(() => {
-    return [...MOCK_REPORTS].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const [reports, setReports] = useState(MOCK_REPORTS);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    api.getReports()
+      .then((res) => {
+        if (!mounted) return;
+        const data = res?.data;
+        if (Array.isArray(data) && data.length) setReports(data);
+      })
+      .catch((err) => {
+        console.warn('Failed to load reports from API, using mock data', err?.message || err);
+        if (!mounted) return;
+        setError(err);
+      })
+      .finally(() => mounted && setLoading(false));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const reportsOrdered = useMemo(() => {
+    return [...reports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }, [reports]);
   const myReports = reportsOrdered.filter((report) => report.isMine);
   const pagedReports = paginate(reportsOrdered, page);
   const totalPages = Math.max(1, Math.ceil(reportsOrdered.length / PAGE_SIZE));

@@ -1,3 +1,3 @@
-// Lee variable de entorno para web; fallback para móvil local
+// Gateway base URL. Routes are defined in api.js with `/api/...` prefixes.
 const webEnv = typeof process !== 'undefined' && process.env.REACT_APP_API_BASE;
-export const API_BASE = webEnv || 'http://192.168.1.100:8080/api';
+export const API_BASE = webEnv || 'http://localhost:8080';
