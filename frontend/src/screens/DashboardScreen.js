@@ -6,6 +6,7 @@ import LogoBanner from '../components/LogoBanner';
 import ResponsiveNav from '../components/ResponsiveNav';
 import ReportCard from '../components/ReportCard';
 import PrimaryButton from '../components/PrimaryButton';
+import ConfirmModal from '../components/ConfirmModal';
 import { COLORS } from '../styles/theme';
 import { MOCK_REPORTS } from '../data/mockReports';
 
@@ -34,6 +35,16 @@ export default function DashboardScreen({ navigation }) {
   const isWide = width >= 980;
   const [page, setPage] = useState(1);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+
+  const handleLogout = () => {
+    setLogoutModalVisible(true);
+  };
+
+  const confirmLogout = () => {
+    setLogoutModalVisible(false);
+    navigation.navigate('Logout');
+  };
 
   const reportsOrdered = useMemo(() => {
     return [...MOCK_REPORTS].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -46,7 +57,7 @@ export default function DashboardScreen({ navigation }) {
     <ScreenShell padded={false} scroll={false}>
       <View style={styles.header}>
         <LogoBanner compact />
-        <ResponsiveNav navigation={navigation} openMenu={() => setMenuOpen((value) => !value)} onLogout={() => navigation.navigate('Logout')} />
+        <ResponsiveNav navigation={navigation} openMenu={() => setMenuOpen((value) => !value)} onLogout={handleLogout} />
       </View>
 
       {menuOpen ? (
@@ -57,7 +68,7 @@ export default function DashboardScreen({ navigation }) {
             ['Profile', 'Perfil'],
             ['Logout', 'Cerrar sesión']
           ].map(([route, label]) => (
-            <Pressable key={route} onPress={() => (route === 'Logout' ? navigation.navigate('Logout') : navigation.navigate(route))} style={styles.mobileMenuItem}>
+            <Pressable key={route} onPress={() => (route === 'Logout' ? handleLogout() : navigation.navigate(route))} style={styles.mobileMenuItem}>
               <Text style={styles.mobileMenuText}>{label}</Text>
             </Pressable>
           ))}
@@ -118,6 +129,13 @@ export default function DashboardScreen({ navigation }) {
           ))}
         </View>
       </ScrollView>
+      <ConfirmModal 
+        visible={logoutModalVisible}
+        title="Cerrar sesión"
+        message="¿Estás seguro de que deseas cerrar sesión?"
+        onConfirm={confirmLogout}
+        onCancel={() => setLogoutModalVisible(false)}
+      />
     </ScreenShell>
   );
 }
