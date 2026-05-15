@@ -12,6 +12,8 @@ export default function ReportDetailScreen({ navigation, route }) {
   const report = useMemo(() => MOCK_REPORTS.find((item) => item.id === reportId) ?? MOCK_REPORTS[0], [reportId]);
   const [mediaIndex, setMediaIndex] = useState(0);
   const isWide = width >= 920;
+  const currentMedia = report.media && report.media.length ? report.media[mediaIndex] : null;
+  const currentSource = typeof currentMedia === 'string' ? { uri: currentMedia } : currentMedia;
 
   return (
     <ScreenShell padded={false} scroll={false}>
@@ -31,7 +33,7 @@ export default function ReportDetailScreen({ navigation, route }) {
         <View style={[styles.wrapper, isWide ? styles.row : styles.column]}>
           <View style={styles.mediaPane}>
             <View style={styles.mediaViewer}>
-              <Image source={{ uri: report.media[mediaIndex] }} style={styles.mediaImage} />
+              <Image source={currentSource} style={styles.mediaImage} />
               <View style={styles.mediaControls}>
                 <Pressable onPress={() => setMediaIndex((value) => (value - 1 + report.media.length) % report.media.length)} style={styles.mediaArrow}>
                   <Ionicons name="chevron-back" size={20} color="#fff" />
@@ -42,11 +44,14 @@ export default function ReportDetailScreen({ navigation, route }) {
               </View>
             </View>
             <View style={styles.thumbs}>
-              {report.media.map((item, index) => (
-                <Pressable key={item} onPress={() => setMediaIndex(index)} style={[styles.thumb, mediaIndex === index && styles.thumbActive]}>
-                  <Image source={{ uri: item }} style={styles.thumbImage} />
-                </Pressable>
-              ))}
+              {report.media.map((item, index) => {
+                const src = typeof item === 'string' ? { uri: item } : item;
+                return (
+                  <Pressable key={index} onPress={() => setMediaIndex(index)} style={[styles.thumb, mediaIndex === index && styles.thumbActive]}>
+                    <Image source={src} style={styles.thumbImage} />
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
 

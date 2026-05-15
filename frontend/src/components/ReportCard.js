@@ -3,9 +3,12 @@ import { Pressable, View, Text, Image, StyleSheet } from 'react-native';
 import { COLORS } from '../styles/theme';
 
 export default function ReportCard({ report, onPress, compact = false }) {
+  const first = report.media && report.media.length ? report.media[0] : null;
+  const imageSource = typeof first === 'string' ? { uri: first } : first;
+
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed, compact && styles.compact]}>
-      <Image source={{ uri: report.media[0] }} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
       <View style={styles.content}>
         <View style={styles.topRow}>
           <Text style={styles.name}>{report.name}</Text>

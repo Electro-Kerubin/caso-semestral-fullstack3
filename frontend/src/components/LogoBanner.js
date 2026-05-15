@@ -1,13 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { COLORS } from '../styles/theme';
 
 export default function LogoBanner({ compact = false }) {
   return (
     <View style={[styles.wrap, compact && styles.compactWrap]}>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>�</Text>
-      </View>
+      <Image source={require('../../assets/logo/logo.svg')} style={styles.logo} />
       <View>
         <Text style={styles.brand}>Sanos y Salvos</Text>
         <Text style={styles.tag}>Encuentra a tu amigo</Text>
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORS.soft
   },
-  badgeText: { fontSize: 22 },
+  logo: { width: 42, height: 42, borderRadius: 12, marginRight: 8 },
   brand: { fontSize: 18, fontWeight: '900', color: COLORS.text },
   tag: { fontSize: 12, color: COLORS.muted, marginTop: 2 }
 });
