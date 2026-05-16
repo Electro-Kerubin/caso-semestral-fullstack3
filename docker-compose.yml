@@ -1,0 +1,155 @@
+services:
+  sanosysalvos-auth-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${AUTH_DB_NAME:-auth_db}
+      POSTGRES_USER: ${AUTH_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-postgres}
+    volumes:
+      - sanosysalvos-auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER:-postgres} -d ${AUTH_DB_NAME:-auth_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - sanos-network
+
+  sanosysalvos-reportes-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${REPORT_DB_NAME:-reportes_db}
+      POSTGRES_USER: ${REPORT_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${REPORT_DB_PASSWORD:-postgres}
+    volumes:
+      - sanosysalvos-reportes-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${REPORT_DB_USER:-postgres} -d ${REPORT_DB_NAME:-reportes_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - sanos-network
+
+  sanosysalvos-geolocation-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${GEO_DB_NAME:-geolocation_db}
+      POSTGRES_USER: ${GEO_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${GEO_DB_PASSWORD:-postgres}
+    volumes:
+      - sanosysalvos-geolocation-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GEO_DB_USER:-postgres} -d ${GEO_DB_NAME:-geolocation_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - sanos-network
+
+  sanosysalvos-matching-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${MATCH_DB_NAME:-matching_db}
+      POSTGRES_USER: ${MATCH_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${MATCH_DB_PASSWORD:-postgres}
+    volumes:
+      - sanosysalvos-matching-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MATCH_DB_USER:-postgres} -d ${MATCH_DB_NAME:-matching_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - sanos-network
+
+  sanosysalvos-auth-service:
+    build:
+      context: ./autenticacion
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://sanosysalvos-auth-db:5432/${AUTH_DB_NAME:-auth_db}
+      DB_USER: ${AUTH_DB_USER:-postgres}
+      DB_PASSWORD: ${AUTH_DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-c2Fub3N5c2Fsdm9zLXNlY3JldC1rZXktcGFyYS1qd3QtMjAyNg==}
+    depends_on:
+      sanosysalvos-auth-db:
+        condition: service_healthy
+    networks:
+      - sanos-network
+
+  sanosysalvos-reportes-service:
+    build:
+      context: ./reportes
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://sanosysalvos-reportes-db:5432/${REPORT_DB_NAME:-reportes_db}
+      DB_USER: ${REPORT_DB_USER:-postgres}
+      DB_PASSWORD: ${REPORT_DB_PASSWORD:-postgres}
+    depends_on:
+      sanosysalvos-reportes-db:
+        condition: service_healthy
+    networks:
+      - sanos-network
+
+  sanosysalvos-geolocation-service:
+    build:
+      context: ./geolocalizacion
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://sanosysalvos-geolocation-db:5432/${GEO_DB_NAME:-geolocation_db}
+      DB_USER: ${GEO_DB_USER:-postgres}
+      DB_PASSWORD: ${GEO_DB_PASSWORD:-postgres}
+    depends_on:
+      sanosysalvos-geolocation-db:
+        condition: service_healthy
+    networks:
+      - sanos-network
+
+  sanosysalvos-matching-service:
+    build:
+      context: ./coincidencias
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://sanosysalvos-matching-db:5432/${MATCH_DB_NAME:-matching_db}
+      DB_USER: ${MATCH_DB_USER:-postgres}
+      DB_PASSWORD: ${MATCH_DB_PASSWORD:-postgres}
+    depends_on:
+      sanosysalvos-matching-db:
+        condition: service_healthy
+    networks:
+      - sanos-network
+
+  sanosysalvos-api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sanosysalvos-auth-service
+      - sanosysalvos-reportes-service
+      - sanosysalvos-geolocation-service
+      - sanosysalvos-matching-service
+    networks:
+      - sanos-network
+
+volumes:
+  sanosysalvos-auth-db-data:
+  sanosysalvos-reportes-db-data:
+  sanosysalvos-geolocation-db-data:
+  sanosysalvos-matching-db-data:
+
+networks:
+  sanos-network:
+    driver: bridge
+    internal: true

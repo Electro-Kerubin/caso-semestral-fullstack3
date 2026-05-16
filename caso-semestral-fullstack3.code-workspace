@@ -1,0 +1,43 @@
+{
+  "folders": [
+    {
+      "name": "frontend",
+      "path": "frontend"
+    },
+    {
+      "name": "geolocalizacion",
+      "path": "geolocalizacion"
+    },
+    {
+      "name": "coincidencias",
+      "path": "coincidencias"
+    },
+    {
+      "name": "reportes",
+      "path": "reportes"
+    },
+    {
+      "name": "autenticacion",
+      "path": "autenticacion"
+    },
+    {
+      "name": "api-gateway",
+      "path": "api-gateway"
+    }
+  ],
+  "settings": {
+    "git.autoRepositoryDetection": "subFolders",
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.expo": true
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.expo": true
+    }
+  }
+}

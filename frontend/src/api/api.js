@@ -42,7 +42,7 @@ export default {
   getReport: id => api.get(`/api/reportes/${id}`),
   publishReport: data => api.post('/api/reportes', data),
   getGeo: params => api.get('/api/geo', { params }),
-  getMatches: reportId => api.get('/api/coincidencias', { params: { reportId } }),
+  getMatches: reportId => api.get('/api/matching', { params: { reportId } }),
   getNotifications: () => api.get('/api/notificaciones'),
   uploadMedia: data => api.post('/api/storage', data),
   health: () => api.get('/actuator/health'),
