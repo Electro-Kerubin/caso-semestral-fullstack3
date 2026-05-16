@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import ScreenShell from '../components/ScreenShell';
 import PrimaryButton from '../components/PrimaryButton';
 
@@ -7,7 +7,11 @@ export default function IndexScreen({ navigation }) {
   return (
     <ScreenShell title="Sanos y Salvos" subtitle="Encuentra a tu amigo" logo>
       <View style={styles.heroImageSpace}>
-        <View style={styles.heroImagePlaceholder} />
+        <Image
+          source={require('../../assets/images/index.png')}
+          style={styles.heroImage}
+          resizeMode="contain"
+        />
       </View>
 
       <View style={styles.actions}>
@@ -32,6 +36,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 0,
     borderRadius: 28
+  },
+  heroImage: {
+    width: '88%',
+    maxWidth: 420,
+    height: 240,
+    borderRadius: 28,
+    alignSelf: 'center'
   },
   actions: { marginTop: 24, gap: 12 },
   button: { width: '88%', alignSelf: 'center' }
