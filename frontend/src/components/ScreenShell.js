@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native';
 import { COLORS } from '../styles/theme';
 
 export default function ScreenShell({ title, subtitle, children, padded = true, scroll = true, topSpace = false, logo = false }) {
@@ -11,9 +11,7 @@ export default function ScreenShell({ title, subtitle, children, padded = true, 
         {(logo || title || subtitle) ? (
           <View style={styles.brandHeader}>
             {logo ? (
-              <View style={styles.logoMark}>
-                <Text style={styles.logoText}>🐾</Text>
-              </View>
+              <Image source={require('../../assets/logo/logo.svg')} style={styles.logoMark} resizeMode="contain" />
             ) : null}
             {title ? <Text style={styles.title}>{title}</Text> : null}
             {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
